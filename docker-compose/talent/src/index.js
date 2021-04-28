@@ -13,18 +13,18 @@ const iotea = require('boschio.iotea');
 const JsonModel = iotea.util.JsonModel;
 const config = new JsonModel(require('../config/config.json'));
 
-process.env.MQTT_TOPIC_NS = config.get('mqtt.ns');
 process.env.LOG_LEVEL = config.get('loglevel');
 
 const Talent = iotea.Talent;
+const TalentInput = iotea.TalentInput;
 
 const {
     VALUE_TYPE_RAW
 } = iotea.constants;
 
 class BrakeLightTalent extends Talent {
-    constructor(connectionString) {
-        super('brake-light-talent', connectionString);
+    constructor(protocolGatewayConfig) {
+        super('brake-light-talent', protocolGatewayConfig);
     }
 
     getRules() {
@@ -36,8 +36,8 @@ class BrakeLightTalent extends Talent {
     }
 
     async onEvent(ev, evtctx) {
-        this.logger.info(`${JSON.stringify(ev.$feature.raw)}`, evtctx);
+        this.logger.info(`Talent Raw Value is: ${TalentInput.getRawValue(ev)}`, evtctx);
     }
 }
 
-new BrakeLightTalent(config.get('mqtt.connectionString')).start();
+new BrakeLightTalent(config.get('protocolGateway')).start();
